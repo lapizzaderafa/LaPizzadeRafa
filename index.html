@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#f6f0e7">
+  <title>Rafa Pizza — Slider Lab</title>
+  <style>
+    :root{
+      --cream:#F6F0E7;
+      --cream-2:#FBF8F3;
+      --wine:#5B1F2A;
+      --ink:#201C1B;
+      --muted:#827773;
+      --line:rgba(43,37,36,.12);
+      --shadow:0 28px 70px rgba(47,30,29,.14);
+      --ease:cubic-bezier(.22,.9,.22,1);
+    }
+    *{box-sizing:border-box}
+    html{background:var(--cream)}
+    body{
+      margin:0;
+      min-height:100vh;
+      background:
+        radial-gradient(circle at 50% 38%,rgba(91,31,42,.06),transparent 34%),
+        var(--cream);
+      color:var(--ink);
+      font-family:-apple-system,BlinkMacSystemFont,"SF Pro Display","Helvetica Neue",Arial,sans-serif;
+      -webkit-font-smoothing:antialiased;
+      overflow-x:hidden;
+    }
+    button{font:inherit}
+    .lab{
+      min-height:100vh;
+      display:grid;
+      grid-template-rows:auto 1fr auto;
+      padding:clamp(22px,4vw,52px);
+      overflow:hidden;
+    }
+    .topbar{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:24px;
+      max-width:1440px;
+      width:100%;
+      margin:0 auto;
+    }
+    .brand{
+      display:flex;
+      align-items:baseline;
+      gap:9px;
+      letter-spacing:-.03em;
+      font-weight:700;
+      font-size:18px;
+    }
+    .brand span:last-child{
+      color:var(--wine);
+      font-size:11px;
+      font-weight:700;
+      letter-spacing:.18em;
+      text-transform:uppercase;
+    }
+    .lab-tag{
+      color:var(--muted);
+      font-size:12px;
+      letter-spacing:.14em;
+      text-transform:uppercase;
+    }
+    .hero{
+      width:100%;
+      max-width:1440px;
+      margin:0 auto;
+      display:grid;
+      align-content:center;
+      justify-items:center;
+      min-height:620px;
+      padding:46px 0 28px;
+    }
+    .eyebrow{
+      margin:0 0 10px;
+      color:var(--wine);
+      font-size:11px;
+      font-weight:700;
+      letter-spacing:.2em;
+      text-transform:uppercase;
+    }
+    h1{
+      margin:0;
+      max-width:900px;
+      text-align:center;
+      font-size:clamp(38px,6.2vw,88px);
+      line-height:.94;
+      letter-spacing:-.065em;
+      font-weight:650;
+    }
+    .subtitle{
+      margin:18px 0 0;
+      color:var(--muted);
+      font-size:clamp(15px,1.5vw,19px);
+      letter-spacing:-.015em;
+      text-align:center;
+    }
+    .stage{
+      position:relative;
+      width:min(1180px,100%);
+      height:390px;
+      margin-top:32px;
+      touch-action:pan-y;
+      user-select:none;
+      -webkit-user-select:none;
+      outline:none;
+    }
+    .stage:focus-visible{
+      outline:2px solid rgba(91,31,42,.35);
+      outline-offset:8px;
+      border-radius:28px;
+    }
+    .slice{
+      --x:0px;
+      --scale:1;
+      --rot:0deg;
+      --opacity:1;
+      position:absolute;
+      left:50%;
+      top:48%;
+      width:clamp(160px,20vw,285px);
+      aspect-ratio:.82;
+      transform:translate(-50%,-50%) translateX(var(--x)) scale(var(--scale)) rotate(var(--rot));
+      opacity:var(--opacity);
+      transition:transform .68s var(--ease),opacity .48s ease,filter .48s ease;
+      border:0;
+      padding:0;
+      background:transparent;
+      cursor:pointer;
+      will-change:transform;
+    }
+    .slice[aria-current="true"]{cursor:grab}
+    .slice[aria-current="true"]:active{cursor:grabbing}
+    .slice-art{
+      position:absolute;
+      inset:0;
+      clip-path:polygon(6% 8%,94% 8%,52% 96%,48% 96%);
+      background:
+        linear-gradient(180deg,rgba(255,255,255,.06),rgba(0,0,0,.05)),
+        var(--photo) center/cover no-repeat;
+      filter:saturate(.92) contrast(1.03);
+      box-shadow:var(--shadow);
+    }
+    .slice::before{
+      content:"";
+      position:absolute;
+      z-index:2;
+      top:5%;
+      left:9%;
+      width:82%;
+      height:13%;
+      border-radius:999px;
+      background:
+        linear-gradient(180deg,rgba(255,255,255,.38),rgba(255,255,255,0) 42%),
+        linear-gradient(90deg,#bd6d43,#d9915f 38%,#a95635 76%,#c97649);
+      box-shadow:0 7px 16px rgba(65,34,25,.18);
+      transform:rotate(-.4deg);
+    }
+    .slice::after{
+      content:"";
+      position:absolute;
+      inset:4% 2% 0;
+      z-index:-1;
+      background:rgba(91,31,42,.14);
+      filter:blur(28px);
+      opacity:0;
+      transition:opacity .5s ease;
+    }
+    .slice[aria-current="true"]::after{opacity:1}
+    .slice-label{
+      position:absolute;
+      left:50%;
+      bottom:-35px;
+      transform:translateX(-50%);
+      white-space:nowrap;
+      color:var(--ink);
+      font-size:12px;
+      font-weight:650;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      opacity:0;
+      transition:opacity .35s ease,transform .45s var(--ease);
+    }
+    .slice[aria-current="true"] .slice-label{
+      opacity:1;
+      transform:translateX(-50%) translateY(3px);
+    }
+    .controls{
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:16px;
+      margin-top:-4px;
+    }
+    .arrow{
+      width:48px;
+      height:48px;
+      display:grid;
+      place-items:center;
+      border:1px solid var(--line);
+      border-radius:999px;
+      background:rgba(251,248,243,.58);
+      color:var(--ink);
+      cursor:pointer;
+      transition:background .2s ease,transform .2s ease,border-color .2s ease;
+      backdrop-filter:blur(12px);
+      -webkit-backdrop-filter:blur(12px);
+    }
+    .arrow svg{width:18px;height:18px}
+    .arrow:active{transform:scale(.94)}
+    .dots{display:flex;gap:7px;align-items:center;padding:0 4px}
+    .dot{
+      width:7px;height:7px;border:0;border-radius:999px;padding:0;
+      background:rgba(43,37,36,.22);cursor:pointer;
+      transition:width .35s var(--ease),background .25s ease;
+    }
+    .dot.active{width:24px;background:var(--wine)}
+    .meta{
+      max-width:1440px;
+      width:100%;
+      margin:0 auto;
+      display:flex;
+      justify-content:space-between;
+      gap:24px;
+      color:var(--muted);
+      font-size:12px;
+    }
+    .meta strong{color:var(--ink);font-weight:600}
+    @media (hover:hover) and (pointer:fine){
+      .arrow:hover{background:var(--cream-2);border-color:rgba(91,31,42,.28)}
+      .slice:not([aria-current="true"]):hover{filter:brightness(1.03)}
+    }
+    @media (max-width:760px){
+      .lab{padding:22px 18px 26px}
+      .lab-tag{display:none}
+      .hero{min-height:600px;padding-top:34px}
+      .stage{height:330px;margin-top:24px}
+      .slice{width:190px}
+      .meta{justify-content:center;text-align:center}
+      .meta span:last-child{display:none}
+    }
+    @media (max-width:420px){
+      h1{font-size:42px}
+      .subtitle{max-width:310px}
+      .stage{height:300px}
+      .slice{width:166px}
+      .controls{margin-top:2px}
+    }
+    @media (prefers-reduced-motion:reduce){
+      .slice,.slice-label,.dot,.arrow{transition:none!important}
+    }
+  </style>
+</head>
+<body>
+  <main class="lab">
+    <header class="topbar">
+      <div class="brand">Rafa <span>Pizza</span></div>
+      <div class="lab-tag">Prototype isolé · Slider 01</div>
+    </header>
+
+    <section class="hero" aria-labelledby="title">
+      <p class="eyebrow">Nos pizzas</p>
+      <h1 id="title">Une pointe à la fois.</h1>
+      <p class="subtitle">Glisse, clique ou utilise les flèches pour découvrir les créations.</p>
+
+      <div class="stage" id="stage" tabindex="0" aria-label="Carrousel interactif de pizzas">
+        <button class="slice" type="button" data-name="Margherita" style="--photo:url('https://rafapizza.ca/assets/01-preparation-signature.jpeg')" aria-label="Afficher Margherita">
+          <span class="slice-art"></span><span class="slice-label">Margherita</span>
+        </button>
+        <button class="slice" type="button" data-name="Fungus" style="--photo:url('https://rafapizza.ca/assets/04-finition-parmesan.jpeg')" aria-label="Afficher Fungus">
+          <span class="slice-art"></span><span class="slice-label">Fungus</span>
+        </button>
+        <button class="slice" type="button" data-name="Mortadella" style="--photo:url('https://rafapizza.ca/assets/01-preparation-signature.jpeg')" aria-label="Afficher Mortadella">
+          <span class="slice-art"></span><span class="slice-label">Mortadella</span>
+        </button>
+        <button class="slice" type="button" data-name="Parma" style="--photo:url('https://rafapizza.ca/assets/04-finition-parmesan.jpeg')" aria-label="Afficher Parma">
+          <span class="slice-art"></span><span class="slice-label">Parma</span>
+        </button>
+        <button class="slice" type="button" data-name="Pepperoni" style="--photo:url('https://rafapizza.ca/assets/01-preparation-signature.jpeg')" aria-label="Afficher Pepperoni">
+          <span class="slice-art"></span><span class="slice-label">Pepperoni</span>
+        </button>
+      </div>
+
+      <div class="controls" aria-label="Contrôles du carrousel">
+        <button class="arrow" id="prev" type="button" aria-label="Pizza précédente">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M15 5l-7 7 7 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <div class="dots" id="dots" aria-label="Choisir une pizza"></div>
+        <button class="arrow" id="next" type="button" aria-label="Pizza suivante">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M9 5l7 7-7 7" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+      </div>
+    </section>
+
+    <footer class="meta">
+      <span><strong id="activeName">Margherita</strong> · prototype de mouvement</span>
+      <span>Aucun lien avec le site public actuel</span>
+    </footer>
+  </main>
+
+  <script>
+    (() => {
+      const stage = document.getElementById('stage');
+      const slices = [...stage.querySelectorAll('.slice')];
+      const prev = document.getElementById('prev');
+      const next = document.getElementById('next');
+      const dots = document.getElementById('dots');
+      const activeName = document.getElementById('activeName');
+      let active = 0;
+      let startX = null;
+      let dragging = false;
+      let wheelLock = false;
+
+      const dotButtons = slices.map((slice, i) => {
+        const b = document.createElement('button');
+        b.type = 'button';
+        b.className = 'dot';
+        b.setAttribute('aria-label', 'Afficher ' + slice.dataset.name);
+        b.addEventListener('click', () => setActive(i));
+        dots.appendChild(b);
+        return b;
+      });
+
+      function signedDistance(index) {
+        let d = index - active;
+        const half = slices.length / 2;
+        if (d > half) d -= slices.length;
+        if (d < -half) d += slices.length;
+        return d;
+      }
+
+      function render() {
+        const narrow = window.matchMedia('(max-width:760px)').matches;
+        const step = narrow ? 118 : 185;
+        slices.forEach((slice, i) => {
+          const d = signedDistance(i);
+          const ad = Math.abs(d);
+          const x = d * step;
+          const scale = ad === 0 ? 1.08 : ad === 1 ? .82 : .66;
+          const rot = d * (narrow ? 7 : 5.5);
+          const opacity = ad > 2 ? 0 : ad === 2 ? .32 : ad === 1 ? .66 : 1;
+          slice.style.setProperty('--x', x + 'px');
+          slice.style.setProperty('--scale', scale);
+          slice.style.setProperty('--rot', rot + 'deg');
+          slice.style.setProperty('--opacity', opacity);
+          slice.style.zIndex = String(20 - ad);
+          slice.style.pointerEvents = ad > 2 ? 'none' : 'auto';
+          slice.setAttribute('aria-current', ad === 0 ? 'true' : 'false');
+          slice.tabIndex = ad <= 1 ? 0 : -1;
+        });
+        dotButtons.forEach((dot,i) => dot.classList.toggle('active', i === active));
+        activeName.textContent = slices[active].dataset.name;
+      }
+
+      function setActive(index) {
+        active = (index + slices.length) % slices.length;
+        render();
+      }
+      function move(delta) { setActive(active + delta); }
+
+      slices.forEach((slice,i) => slice.addEventListener('click', () => {
+        if (!dragging) setActive(i);
+      }));
+      prev.addEventListener('click', () => move(-1));
+      next.addEventListener('click', () => move(1));
+
+      stage.addEventListener('keydown', e => {
+        if (e.key === 'ArrowLeft') { e.preventDefault(); move(-1); }
+        if (e.key === 'ArrowRight') { e.preventDefault(); move(1); }
+      });
+
+      stage.addEventListener('pointerdown', e => {
+        startX = e.clientX;
+        dragging = false;
+        stage.setPointerCapture?.(e.pointerId);
+      });
+      stage.addEventListener('pointermove', e => {
+        if (startX === null) return;
+        if (Math.abs(e.clientX - startX) > 8) dragging = true;
+      });
+      stage.addEventListener('pointerup', e => {
+        if (startX === null) return;
+        const dx = e.clientX - startX;
+        if (Math.abs(dx) > 42) move(dx < 0 ? 1 : -1);
+        startX = null;
+        setTimeout(() => { dragging = false; }, 0);
+      });
+      stage.addEventListener('pointercancel', () => { startX = null; dragging = false; });
+
+      stage.addEventListener('wheel', e => {
+        if (Math.abs(e.deltaX) < 12 && Math.abs(e.deltaY) < 24) return;
+        if (wheelLock) return;
+        e.preventDefault();
+        wheelLock = true;
+        move((Math.abs(e.deltaX) > Math.abs(e.deltaY) ? e.deltaX : e.deltaY) > 0 ? 1 : -1);
+        setTimeout(() => wheelLock = false, 480);
+      }, {passive:false});
+
+      window.addEventListener('resize', render);
+      render();
+    })();
+  </script>
+</body>
+</html>
