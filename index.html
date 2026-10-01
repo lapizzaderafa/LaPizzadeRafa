@@ -140,28 +140,11 @@
     .slice-art{
       position:absolute;
       inset:0;
-      clip-path:polygon(6% 8%,94% 8%,52% 96%,48% 96%);
-      background:
-        linear-gradient(180deg,rgba(255,255,255,.06),rgba(0,0,0,.05)),
-        var(--photo) center/cover no-repeat;
-      filter:saturate(.92) contrast(1.03);
-      box-shadow:var(--shadow);
+      background:var(--photo) center/contain no-repeat;
+      filter:saturate(.96) contrast(1.02);
+      drop-shadow:0 28px 34px rgba(47,30,29,.15);
     }
-    .slice::before{
-      content:"";
-      position:absolute;
-      z-index:2;
-      top:5%;
-      left:9%;
-      width:82%;
-      height:13%;
-      border-radius:999px;
-      background:
-        linear-gradient(180deg,rgba(255,255,255,.38),rgba(255,255,255,0) 42%),
-        linear-gradient(90deg,#bd6d43,#d9915f 38%,#a95635 76%,#c97649);
-      box-shadow:0 7px 16px rgba(65,34,25,.18);
-      transform:rotate(-.4deg);
-    }
+    .slice::before{display:none}
     .slice::after{
       content:"";
       position:absolute;
@@ -267,23 +250,17 @@
     <section class="hero" aria-labelledby="title">
       <p class="eyebrow">Nos pizzas</p>
       <h1 id="title">Une pointe à la fois.</h1>
-      <p class="subtitle">Glisse, clique ou utilise les flèches pour découvrir les créations.</p>
+      <p class="subtitle">Glisse les vraies pointes Rafa, ou utilise les flèches pour les faire défiler.</p>
 
-      <div class="stage" id="stage" tabindex="0" aria-label="Carrousel interactif de pizzas">
-        <button class="slice" type="button" data-name="Margherita" style="--photo:url('https://rafapizza.ca/assets/01-preparation-signature.jpeg')" aria-label="Afficher Margherita">
+      <div class="stage" id="stage" tabindex="0" aria-label="Carrousel interactif de pizzas Rafa">
+        <button class="slice" type="button" data-name="Margherita" style="--photo:url('./assets/slices/margherita.webp')" aria-label="Afficher Margherita">
           <span class="slice-art"></span><span class="slice-label">Margherita</span>
         </button>
-        <button class="slice" type="button" data-name="Fungus" style="--photo:url('https://rafapizza.ca/assets/04-finition-parmesan.jpeg')" aria-label="Afficher Fungus">
+        <button class="slice" type="button" data-name="Fungus" style="--photo:url('./assets/slices/fungus.webp')" aria-label="Afficher Fungus">
           <span class="slice-art"></span><span class="slice-label">Fungus</span>
         </button>
-        <button class="slice" type="button" data-name="Mortadella" style="--photo:url('https://rafapizza.ca/assets/01-preparation-signature.jpeg')" aria-label="Afficher Mortadella">
-          <span class="slice-art"></span><span class="slice-label">Mortadella</span>
-        </button>
-        <button class="slice" type="button" data-name="Parma" style="--photo:url('https://rafapizza.ca/assets/04-finition-parmesan.jpeg')" aria-label="Afficher Parma">
-          <span class="slice-art"></span><span class="slice-label">Parma</span>
-        </button>
-        <button class="slice" type="button" data-name="Pepperoni" style="--photo:url('https://rafapizza.ca/assets/01-preparation-signature.jpeg')" aria-label="Afficher Pepperoni">
-          <span class="slice-art"></span><span class="slice-label">Pepperoni</span>
+        <button class="slice" type="button" data-name="Mortadella pistache" style="--photo:url('./assets/slices/mortadella.webp')" aria-label="Afficher Mortadella pistache">
+          <span class="slice-art"></span><span class="slice-label">Mortadella pistache</span>
         </button>
       </div>
 
@@ -299,7 +276,7 @@
     </section>
 
     <footer class="meta">
-      <span><strong id="activeName">Margherita</strong> · prototype de mouvement</span>
+      <span><strong id="activeName">Margherita</strong> · pointes Rafa · prototype de mouvement</span>
       <span>Aucun lien avec le site public actuel</span>
     </footer>
   </main>
